@@ -4,11 +4,19 @@ A high-performance web-based content intelligence, scraping, categorization, and
 
 ---
 
-## 🚀 Features
+## 📸 Dashboard Preview
 
-- **Real-Time Analytics Dashboard**: Real-time stats for **Today**, **Yesterday**, **Last 7 Days**, and **Last 30 Days**.
-- **Exact Date Verification**: Multi-stage date extraction pipeline (`JSON-LD` -> `Meta / OpenGraph` -> `<time>` -> text regex) strictly bound to application timezone (`Asia/Kolkata`).
-- **Category Publishing Matrix**: Automated categorization across Latest Jobs, Admit Cards, Results, Answer Keys, Syllabus, and Admissions.
+![Gov Content Tracker - Dashboard & Analytics Overview](./Public/screenshot-1787450411643.png)
+
+![Gov Content Tracker - Discovered Post Intelligence Feed](./Public/screenshot-1787450455262.png)
+
+---
+
+## 🚀 Key Features
+
+- **Real-Time Analytics Dashboard**: Real-time metric tiles for **Today**, **Yesterday**, **Last 7 Days**, and **Last 30 Days**.
+- **Exact Date Verification**: Multi-stage date extraction pipeline (`JSON-LD` -> `Meta / OpenGraph` -> `<time>` -> visible text parsing) strictly bound to application timezone (`Asia/Kolkata`).
+- **Category Publishing Matrix**: Automated categorization across Latest Jobs, Admit Cards, Results, Answer Keys, Syllabus, and Admissions with interactive row filtering.
 - **Date Publishing Timeline**: Daily publishing cadence with visual volume share bars.
 - **Discovered Posts Intelligence Feed**:
   - Live table with **`NEW`** badges
