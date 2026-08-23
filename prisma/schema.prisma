@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Source {
+  id           String     @id @default(cuid())
+  name         String
+  baseUrl      String
+  homepageUrl  String
+  enabled      Boolean    @default(true)
+  scrapeConfig String?    // JSON configuration string
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  categories   Category[]
+  posts        Post[]
+  scanRuns     ScanRun[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  sourceId  String
+  name      String
+  slug      String
+  sourceUrl String
+  priority  Int      @default(1)
+  keywords  String?  // JSON string or comma-separated detection keywords
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  source Source @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  posts  Post[]
+
+  @@unique([sourceId, slug])
+  @@index([sourceId])
+}
+
+model Post {
+  id              String   @id @default(cuid())
+  sourceId        String
+  categoryId      String
+  title           String
+  sourceUrl       String
+  sourceUrlHash   String   @unique
+  publishedAt     DateTime
+  detectedAt      DateTime @default(now())
+  firstSeenAt     DateTime @default(now())
+  lastCheckedAt   DateTime @default(now())
+  dateSource      String   @default("detected_at") // json_ld, meta, time_element, visible_html, rss, sitemap, detected_at
+  dateConfidence  String   @default("medium")      // high, medium, low
+  isNew           Boolean  @default(true)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  source   Source   @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([sourceId])
+  @@index([categoryId])
+  @@index([publishedAt])
+  @@index([categoryId, publishedAt])
+  @@index([detectedAt])
+}
+
+model ScanRun {
+  id                 String      @id @default(cuid())
+  sourceId           String
+  scanType           String      // today, last_30_days, category, manual
+  startedAt          DateTime    @default(now())
+  completedAt        DateTime?
+  status             String      @default("running") // queued, running, completed, failed, cancelled
+  categoriesScanned  Int         @default(0)
+  pagesScanned       Int         @default(0)
+  postsDiscovered    Int         @default(0)
+  newPosts           Int         @default(0)
+  existingPosts      Int         @default(0)
+  failedPosts        Int         @default(0)
+  errorCount         Int         @default(0)
+  durationMs         Int         @default(0)
+  errorSummary       String?
+
+  source             Source      @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  errors             ScanError[]
+
+  @@index([sourceId])
+  @@index([startedAt])
+}
+
+model ScanError {
+  id           String   @id @default(cuid())
+  scanRunId    String
+  url          String
+  errorType    String
+  errorMessage String
+  httpStatus   Int?
+  createdAt    DateTime @default(now())
+
+  scanRun      ScanRun  @relation(fields: [scanRunId], references: [id], onDelete: Cascade)
+
+  @@index([scanRunId])
+}
